@@ -1,0 +1,220 @@
+.section {
+    margin: 10px;
+    padding: 10px;
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+.section-header {
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+}
+
+.section ObjectField {
+    margin-top: 5px;
+}
+
+.scene-box {
+    margin: 10px 5px;
+    padding: 10px;
+    border-width: 1px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+} 
+
+.scene-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.scene-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    flex: 1;
+    margin-right: 5px;
+}
+
+.panels-list {
+    margin-top: 5px;
+    min-height: 100px;
+    max-height: 200px;
+}
+
+.panel-list { 
+    margin-left: 20px; 
+}
+
+.panel-item { 
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin: 2px 0; 
+}
+
+.panel-name { 
+    flex: 1; 
+}
+
+.add-scene-button {
+    margin: 10px 5px;
+    padding: 5px;
+    height: 30px;
+}
+
+.small-button { 
+    width: 20px; 
+    height: 20px; 
+    padding: 0; 
+    margin-left: 2px; 
+    font-size: 12px; 
+}
+
+.play-button { 
+    background-color: rgb(45, 164, 78); 
+    color: white; 
+    border-radius: 3px; 
+}
+
+.delete-button {
+    width: 60px;
+    height: 20px;
+    margin-left: 5px;
+    background-color: rgb(200, 50, 50);
+    color: white;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+.active-panel > .unity-object-field__input {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.active-panel .unity-object-field-display__label {
+    -unity-font-style: bold;
+    color: rgb(0, 120, 0);
+}
+
+.main-layout {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.tab-buttons {
+    flex-direction: row;
+    margin: 10px 5px 0 5px;
+    padding: 0;
+    border-bottom-width: 0;
+}
+
+.tab-button {
+    padding: 5px 10px;
+    margin: 0;
+    margin-right: -1px;
+    border-width: 1px;
+    border-radius: 3px 3px 0 0;
+    border-bottom-width: 0;
+    background-color: var(--unity-colors-toolbar_button-background);
+    -unity-font-style: normal;
+    font-size: 12px;
+    color: var(--unity-colors-toolbar_button-text);
+    min-width: 100px;
+    position: relative;
+    top: 1px;
+}
+
+.tab-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button--active {
+    background-color: var(--unity-colors-window-background);
+    border-color: var(--unity-colors-toolbar_button-border);
+    -unity-font-style: bold;
+    color: var(--unity-colors-toolbar_button-text-pressed);
+    --unity-z-index: 1;
+}
+
+.tab-container {
+    flex-grow: 1;
+    margin: 0 5px;
+    border-width: 1px;
+    border-color: var(--unity-colors-toolbar_button-border);
+    background-color: var(--unity-colors-window-background);
+}
+
+.tab-content {
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.unity-tab-view {
+    flex-grow: 1;
+}
+
+.unity-tab-strip {
+    height: 30px;
+    background-color: var(--unity-colors-tab-background);
+}
+
+.unity-tab {
+    padding: 5px 10px;
+    margin: 0;
+    border-width: 1px;
+    border-radius: 3px 3px 0 0;
+}
+
+.unity-tab--active {
+    background-color: var(--unity-colors-window-background);
+    border-bottom-width: 0;
+}
+
+.scene-list {
+    margin-top: 10px;
+}
+
+.menu-system-field {
+    margin-bottom: 10px;
+}
+
+.scene-entry {
+    margin: 5px;
+    padding: 5px;
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+.scene-entry-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scene-entry-panels {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.panel-entry {
+    margin: 5px 0;
+    flex-direction: row;
+    align-items: center;
+}
+
+.panel-entry ObjectField {
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.loading-screen-section {
+    margin-top: 15px;
+}
+
+.loading-screen-section .section-header {
+    color: var(--unity-colors-label-text);
+}

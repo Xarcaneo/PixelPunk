@@ -1,0 +1,15 @@
+using UnityEngine;
+using System.Threading.Tasks;
+
+public class #SCRIPTNAME# : MenuFlow.Components.MenuPanel
+{
+    public override Task Show()
+    {
+        return base.Show();
+    }
+
+    public override Task Hide()
+    {
+        return base.Hide();
+    }
+}

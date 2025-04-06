@@ -1,0 +1,14 @@
+{
+  "name": "com.menuflow.ui",
+  "version": "1.0.0",
+  "displayName": "MenuFlow UI System",
+  "description": "A data-driven menu navigation system for Unity using ScriptableObjects",
+  "unity": "2021.3",
+  "author": {
+    "name": "MenuFlow",
+    "url": ""
+  },
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  }
+}

@@ -1,0 +1,116 @@
+/* Common styles */
+.menu-flow-window {
+    flex-grow: 1;
+}
+
+.menu-flow-toolbar {
+    padding: 5px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(37, 37, 37);
+}
+
+.menu-flow-toolbar__spacer {
+    flex-grow: 1;
+}
+
+.menu-flow-graph {
+    flex-grow: 1;
+}
+
+/* Menu Node styles */
+.menu-node {
+    min-width: 150px;
+    margin: 20px;
+}
+
+.menu-node__container {
+    background-color: rgb(32, 32, 32);
+    border-radius: 3px;
+    border-width: 0;
+}
+
+.menu-node__port-section {
+    background-color: rgb(77, 77, 77);
+    height: 20px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.menu-node__port {
+    align-self: center;
+}
+
+.menu-node__title-section {
+    background-color: rgb(51, 122, 183);
+    padding: 8px;
+}
+
+.menu-node__title-label {
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.menu-node--selected .menu-node__title-section {
+    background-color: rgb(68, 138, 255);
+}
+
+.menu-node--active .menu-node__title-section {
+    background-color: rgb(76, 175, 80);
+}
+
+/* Panel Creator styles */
+.panel-creator {
+    padding: 10px;
+}
+
+.panel-creator__field {
+    margin: 5px 0;
+}
+
+.panel-creator__buttons {
+    margin-top: 10px;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* Menu Flow Editor styles */
+.menu-flow-editor {
+    flex-grow: 1;
+}
+
+.menu-flow-editor__toolbar {
+    padding: 5px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(37, 37, 37);
+}
+
+.menu-flow-editor__content {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+/* Grid background */
+.menu-flow-grid {
+    --grid-background-color: rgb(40, 40, 40);
+    --line-color: rgba(193, 196, 192, 0.1);
+    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --spacing: 15;
+}
+
+/* Constants status icon styles */
+.constants-status-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    border-radius: 8px;
+}
+
+.constants-up-to-date {
+    background-color: rgb(76, 175, 80);
+}
+
+.constants-out-of-date {
+    background-color: rgb(244, 67, 54);
+}

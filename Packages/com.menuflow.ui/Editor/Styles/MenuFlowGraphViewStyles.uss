@@ -1,0 +1,8 @@
+.menu-flow-graph-view {
+    --horizontal-spacing: 100px;
+    --vertical-spacing: 80px;
+    --root-offset-x: 20px;
+    --root-offset-y: 20px;
+    --node-width: 150px;
+    --node-height: 80px;
+}
