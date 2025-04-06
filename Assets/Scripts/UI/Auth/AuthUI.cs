@@ -21,45 +21,46 @@ namespace PixelPunk.UI.Auth
     /// <item><description>Communication with the auth service</description></item>
     /// <item><description>Visual feedback during authentication operations</description></item>
     /// </list>
-    /// 
-    /// Dependencies:
-    /// <list type="bullet">
-    /// <item><description><see cref="IAuthService"/> - For authentication operations</description></item>
-    /// <item><description><see cref="ServiceRegistry"/> - For service access</description></item>
-    /// </list>
-    /// 
-    /// Usage:
-    /// <code>
-    /// // Attach this component to a GameObject with:
-    /// // - TMP_InputField components for username/password
-    /// // - Button components for login/register actions
-    /// // - TextMeshProUGUI component for status display
-    /// </code>
     /// </remarks>
     public class AuthUI : MonoBehaviour
     {
-        [Header("Input Fields")]
+        [Header("Login Fields")]
         [SerializeField] 
-        [Tooltip("Input field for username")]
-        private TMP_InputField usernameInput = null!;
+        [Tooltip("Input field for login username")]
+        private TMP_InputField loginUsernameInput = null!;
 
         [SerializeField]
-        [Tooltip("Input field for password")]
-        private TMP_InputField passwordInput = null!;
+        [Tooltip("Input field for login password")]
+        private TMP_InputField loginPasswordInput = null!;
 
-        [Header("Buttons")]
         [SerializeField]
         [Tooltip("Button to trigger login")]
         private Button loginButton = null!;
 
         [SerializeField]
+        [Tooltip("Status text for login operations")]
+        private TextMeshProUGUI loginStatusText = null!;
+
+        [Header("Register Fields")]
+        [SerializeField] 
+        [Tooltip("Input field for register username")]
+        private TMP_InputField registerUsernameInput = null!;
+
+        [SerializeField]
+        [Tooltip("Input field for register password")]
+        private TMP_InputField registerPasswordInput = null!;
+
+        [SerializeField]
+        [Tooltip("Input field to confirm register password")]
+        private TMP_InputField registerConfirmPasswordInput = null!;
+
+        [SerializeField]
         [Tooltip("Button to trigger registration")]
         private Button registerButton = null!;
 
-        [Header("Status")]
         [SerializeField]
-        [Tooltip("Text display for status messages")]
-        private TextMeshProUGUI statusText = null!;
+        [Tooltip("Status text for registration operations")]
+        private TextMeshProUGUI registerStatusText = null!;
 
         /// <summary>
         /// Reference to the authentication service.
@@ -67,105 +68,80 @@ namespace PixelPunk.UI.Auth
         /// </summary>
         private IAuthService? _authService;
 
-        /// <summary>
-        /// Initializes the UI component by:
-        /// <list type="number">
-        /// <item><description>Retrieving the auth service from the registry</description></item>
-        /// <item><description>Setting up button click handlers</description></item>
-        /// <item><description>Initializing the status display</description></item>
-        /// </list>
-        /// </summary>
         private void Start()
         {
             _authService = ServiceRegistry.Instance?.GetService<IAuthService>();
             if (_authService == null)
             {
-                Debug.LogError("AuthService not found in ServiceRegistry");
+                UpdateLoginStatus("Auth service not available");
+                UpdateRegisterStatus("Auth service not available");
                 return;
             }
 
             loginButton.onClick.AddListener(OnLoginClick);
             registerButton.onClick.AddListener(OnRegisterClick);
-            UpdateStatus("Please log in or register");
+            
+            UpdateLoginStatus("Please log in");
+            UpdateRegisterStatus("Or create a new account");
         }
 
         /// <summary>
-        /// Updates the status message displayed to the user.
+        /// Updates the login status message.
         /// </summary>
-        /// <param name="message">The message to display. Can be an error message, success message, or general status update.</param>
-        /// <remarks>
-        /// This method is used to provide real-time feedback about:
-        /// <list type="bullet">
-        /// <item><description>Form validation errors</description></item>
-        /// <item><description>Authentication progress</description></item>
-        /// <item><description>Success/failure of operations</description></item>
-        /// </list>
-        /// </remarks>
-        private void UpdateStatus(string message)
+        /// <param name="message">Status message for login operations</param>
+        private void UpdateLoginStatus(string message)
         {
-            statusText.text = message;
+            loginStatusText.text = message;
+        }
+
+        /// <summary>
+        /// Updates the registration status message.
+        /// </summary>
+        /// <param name="message">Status message for registration operations</param>
+        private void UpdateRegisterStatus(string message)
+        {
+            registerStatusText.text = message;
         }
 
         /// <summary>
         /// Handles the login button click event.
         /// </summary>
-        /// <remarks>
-        /// This method:
-        /// <list type="number">
-        /// <item><description>Validates the form input</description></item>
-        /// <item><description>Creates a login request</description></item>
-        /// <item><description>Disables UI during the request</description></item>
-        /// <item><description>Handles success/failure responses</description></item>
-        /// </list>
-        /// 
-        /// On success:
-        /// <list type="bullet">
-        /// <item><description>Updates status to show success</description></item>
-        /// <item><description>TODO: Transitions to the game scene</description></item>
-        /// </list>
-        /// 
-        /// On failure:
-        /// <list type="bullet">
-        /// <item><description>Displays the error message</description></item>
-        /// <item><description>Re-enables the form</description></item>
-        /// </list>
-        /// </remarks>
         public void OnLoginClick()
         {
             if (_authService == null)
             {
-                UpdateStatus("Auth service not available");
+                UpdateLoginStatus("Auth service not available");
                 return;
             }
 
-            if (string.IsNullOrEmpty(usernameInput.text) || string.IsNullOrEmpty(passwordInput.text))
+            if (string.IsNullOrEmpty(loginUsernameInput.text) || string.IsNullOrEmpty(loginPasswordInput.text))
             {
-                UpdateStatus("Please fill in all fields");
+                UpdateLoginStatus("Please fill in all login fields");
                 return;
             }
 
             var loginRequest = new LoginRequest
             {
-                Username = usernameInput.text,
-                Password = passwordInput.text
+                Username = loginUsernameInput.text,
+                Password = loginPasswordInput.text
             };
 
-            UpdateStatus("Logging in...");
-            SetInteractable(false);
+            UpdateLoginStatus("Logging in...");
+            SetLoginInteractable(false);
 
             StartCoroutine(_authService.Login(
                 loginRequest,
                 success => {
                     if (success)
                     {
-                        UpdateStatus("Login successful!");
+                        UpdateLoginStatus("Login successful!");
                         // TODO: Load your game scene here
                     }
-                    SetInteractable(true);
+                    SetLoginInteractable(true);
                 },
                 error => {
-                    UpdateStatus($"Login failed: {error}");
-                    SetInteractable(true);
+                    UpdateLoginStatus($"Login failed: {error}");
+                    SetLoginInteractable(true);
                 }
             ));
         }
@@ -173,92 +149,83 @@ namespace PixelPunk.UI.Auth
         /// <summary>
         /// Handles the register button click event.
         /// </summary>
-        /// <remarks>
-        /// This method:
-        /// <list type="number">
-        /// <item><description>Validates the form input</description></item>
-        /// <item><description>Creates a registration request</description></item>
-        /// <item><description>Disables UI during the request</description></item>
-        /// <item><description>Handles success/failure responses</description></item>
-        /// </list>
-        /// 
-        /// On success:
-        /// <list type="bullet">
-        /// <item><description>Updates status to show success</description></item>
-        /// <item><description>Prompts user to log in</description></item>
-        /// </list>
-        /// 
-        /// On failure:
-        /// <list type="bullet">
-        /// <item><description>Displays the error message</description></item>
-        /// <item><description>Re-enables the form</description></item>
-        /// </list>
-        /// </remarks>
         public void OnRegisterClick()
         {
             if (_authService == null)
             {
-                UpdateStatus("Auth service not available");
+                UpdateRegisterStatus("Auth service not available");
                 return;
             }
 
-            if (string.IsNullOrEmpty(usernameInput.text) || string.IsNullOrEmpty(passwordInput.text))
+            if (string.IsNullOrEmpty(registerUsernameInput.text) || 
+                string.IsNullOrEmpty(registerPasswordInput.text) ||
+                string.IsNullOrEmpty(registerConfirmPasswordInput.text))
             {
-                UpdateStatus("Please fill in all fields");
+                UpdateRegisterStatus("Please fill in all registration fields");
+                return;
+            }
+
+            if (registerPasswordInput.text != registerConfirmPasswordInput.text)
+            {
+                UpdateRegisterStatus("Passwords do not match");
                 return;
             }
 
             var registerRequest = new RegisterRequest
             {
-                Username = usernameInput.text,
-                Password = passwordInput.text
+                Username = registerUsernameInput.text,
+                Password = registerPasswordInput.text
             };
 
-            UpdateStatus("Registering...");
-            SetInteractable(false);
+            UpdateRegisterStatus("Registering...");
+            SetRegisterInteractable(false);
 
             StartCoroutine(_authService.Register(
                 registerRequest,
                 success => {
                     if (success)
                     {
-                        UpdateStatus("Registration successful! You can now log in.");
+                        UpdateRegisterStatus("Registration successful! You can now log in.");
+                        ClearRegisterFields();
                     }
-                    SetInteractable(true);
+                    SetRegisterInteractable(true);
                 },
                 error => {
-                    UpdateStatus($"Registration failed: {error}");
-                    SetInteractable(true);
+                    UpdateRegisterStatus($"Registration failed: {error}");
+                    SetRegisterInteractable(true);
                 }
             ));
         }
 
         /// <summary>
-        /// Controls the interactive state of all UI elements.
+        /// Controls the interactive state of login UI elements.
         /// </summary>
-        /// <param name="interactable">Whether the UI elements should be interactable</param>
-        /// <remarks>
-        /// This method is used to:
-        /// <list type="bullet">
-        /// <item><description>Disable input during authentication operations</description></item>
-        /// <item><description>Prevent multiple simultaneous requests</description></item>
-        /// <item><description>Re-enable input after operations complete</description></item>
-        /// </list>
-        /// 
-        /// Affected elements:
-        /// <list type="bullet">
-        /// <item><description>Username input field</description></item>
-        /// <item><description>Password input field</description></item>
-        /// <item><description>Login button</description></item>
-        /// <item><description>Register button</description></item>
-        /// </list>
-        /// </remarks>
-        private void SetInteractable(bool interactable)
+        private void SetLoginInteractable(bool interactable)
         {
-            usernameInput.interactable = interactable;
-            passwordInput.interactable = interactable;
+            loginUsernameInput.interactable = interactable;
+            loginPasswordInput.interactable = interactable;
             loginButton.interactable = interactable;
+        }
+
+        /// <summary>
+        /// Controls the interactive state of registration UI elements.
+        /// </summary>
+        private void SetRegisterInteractable(bool interactable)
+        {
+            registerUsernameInput.interactable = interactable;
+            registerPasswordInput.interactable = interactable;
+            registerConfirmPasswordInput.interactable = interactable;
             registerButton.interactable = interactable;
+        }
+
+        /// <summary>
+        /// Clears all registration input fields.
+        /// </summary>
+        private void ClearRegisterFields()
+        {
+            registerUsernameInput.text = string.Empty;
+            registerPasswordInput.text = string.Empty;
+            registerConfirmPasswordInput.text = string.Empty;
         }
     }
 }

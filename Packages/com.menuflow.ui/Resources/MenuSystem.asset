@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce6583128279ea46ad6faa2ecf84972, type: 3}
   m_Name: MenuSystem
   m_EditorClassIdentifier: 
-  initialPanel: {fileID: 11400000, guid: 2b0e23c062023ec4dbd82375a3513e74, type: 2}
+  initialPanel: {fileID: 11400000, guid: 502ac26007e836f4caa52786b5f71ea4, type: 2}
   loadingScreenPrefab: {fileID: 1912575098979278683, guid: d3d713df5441be540aabf108147c4dae, type: 3}
   loadingScreenInstance: {fileID: 0}
   scenes:
   - sceneAsset: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
     sceneName: LoginScene
     panels:
-    - {fileID: 11400000, guid: 2b0e23c062023ec4dbd82375a3513e74, type: 2}
+    - {fileID: 11400000, guid: 502ac26007e836f4caa52786b5f71ea4, type: 2}
+    - {fileID: 11400000, guid: b8e7a255546b47e4bac6f485653934b1, type: 2}
   - sceneAsset: {fileID: 102900000, guid: 6a6de4de442783a439127432c9c613fa, type: 3}
     sceneName: GamePlayScene
     panels:

@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f7890abcdef0123456789, type: 3}
-  m_Name: AuthMenu
+  m_Name: LoginMenu
   m_EditorClassIdentifier: 
   parentMenu: {fileID: 0}
   childMenus: []
   sceneName: LoginScene
-  menuPrefab: {fileID: 5213203306088579089, guid: 73c7f71f8b8fa9d44b545cf1302dca45, type: 3}
+  menuPrefab: {fileID: 7543916761928346097, guid: c57fb2e75d1467b4cbf2f9483db50e27, type: 3}
   sceneInstance: {fileID: 0}
   serializedNodeData:
-  - nodeId: AuthMenu
+  - nodeId: LoginMenu
     data:
-      position: {x: 0, y: 0}
+      position: {x: 100, y: 100}
       outputConnections: []
