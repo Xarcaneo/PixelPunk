@@ -16,11 +16,11 @@ MonoBehaviour:
   loadingScreenPrefab: {fileID: 1912575098979278683, guid: d3d713df5441be540aabf108147c4dae, type: 3}
   loadingScreenInstance: {fileID: 0}
   scenes:
-  - sceneAsset: {fileID: 102900000, guid: 6a6de4de442783a439127432c9c613fa, type: 3}
-    sceneName: GamePlayScene
-    panels:
-    - {fileID: 11400000, guid: 2b0e23c062023ec4dbd82375a3513e74, type: 2}
   - sceneAsset: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
     sceneName: LoginScene
+    panels:
+    - {fileID: 11400000, guid: 2b0e23c062023ec4dbd82375a3513e74, type: 2}
+  - sceneAsset: {fileID: 102900000, guid: 6a6de4de442783a439127432c9c613fa, type: 3}
+    sceneName: GamePlayScene
     panels:
     - {fileID: 11400000, guid: b6cbcf5981adb8841870d87fcb1ff2d7, type: 2}
