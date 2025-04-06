@@ -15,12 +15,14 @@ namespace MenuFlow
         /// </summary>
         public static class Menus
         {
-            /// <summary>Menu: RegisterMenu</summary>
-            public const string RegisterMenu = "RegisterMenu";
             /// <summary>Menu: LoginMenu</summary>
             public const string LoginMenu = "LoginMenu";
+            /// <summary>Menu: RegisterMenu</summary>
+            public const string RegisterMenu = "RegisterMenu";
             /// <summary>Menu: GameOverlayMenu</summary>
             public const string GameOverlayMenu = "GameOverlayMenu";
+            /// <summary>Menu: SplashScreenMenu</summary>
+            public const string SplashScreenMenu = "SplashScreenMenu";
         }
     }
 }

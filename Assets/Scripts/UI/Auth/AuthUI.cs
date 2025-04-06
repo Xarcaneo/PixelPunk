@@ -4,9 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.Threading.Tasks;
 using PixelPunk.API.Services;
 using PixelPunk.API.Models;
 using PixelPunk.Core;
+using MenuFlow.Core;
 
 namespace PixelPunk.UI.Auth
 {
@@ -82,7 +84,7 @@ namespace PixelPunk.UI.Auth
             registerButton.onClick.AddListener(OnRegisterClick);
             
             UpdateLoginStatus("Please log in");
-            UpdateRegisterStatus("Or create a new account");
+            UpdateRegisterStatus("Create a new account");
         }
 
         /// <summary>
@@ -122,8 +124,8 @@ namespace PixelPunk.UI.Auth
 
             var loginRequest = new LoginRequest
             {
-                Username = loginUsernameInput.text,
-                Password = loginPasswordInput.text
+                username = loginUsernameInput.text,
+                password = loginPasswordInput.text
             };
 
             UpdateLoginStatus("Logging in...");
@@ -131,11 +133,11 @@ namespace PixelPunk.UI.Auth
 
             StartCoroutine(_authService.Login(
                 loginRequest,
-                success => {
+                async success => {
                     if (success)
                     {
                         UpdateLoginStatus("Login successful!");
-                        // TODO: Load your game scene here
+                        await MenuManager.Instance.TransitionTo(MenuFlow.MenuFlowConstants.Menus.GameOverlayMenu);
                     }
                     SetLoginInteractable(true);
                 },
@@ -173,8 +175,8 @@ namespace PixelPunk.UI.Auth
 
             var registerRequest = new RegisterRequest
             {
-                Username = registerUsernameInput.text,
-                Password = registerPasswordInput.text
+                username = registerUsernameInput.text,
+                password = registerPasswordInput.text
             };
 
             UpdateRegisterStatus("Registering...");
@@ -202,6 +204,10 @@ namespace PixelPunk.UI.Auth
         /// </summary>
         private void SetLoginInteractable(bool interactable)
         {
+            // Check if the UI elements still exist before accessing them
+            if (this == null || !gameObject || loginUsernameInput == null || loginPasswordInput == null || loginButton == null)
+                return;
+
             loginUsernameInput.interactable = interactable;
             loginPasswordInput.interactable = interactable;
             loginButton.interactable = interactable;
@@ -212,6 +218,11 @@ namespace PixelPunk.UI.Auth
         /// </summary>
         private void SetRegisterInteractable(bool interactable)
         {
+            // Check if the UI elements still exist before accessing them
+            if (this == null || !gameObject || registerUsernameInput == null || registerPasswordInput == null || 
+                registerConfirmPasswordInput == null || registerButton == null)
+                return;
+
             registerUsernameInput.interactable = interactable;
             registerPasswordInput.interactable = interactable;
             registerConfirmPasswordInput.interactable = interactable;
@@ -223,6 +234,11 @@ namespace PixelPunk.UI.Auth
         /// </summary>
         private void ClearRegisterFields()
         {
+            // Check if the UI elements still exist before accessing them
+            if (this == null || !gameObject || registerUsernameInput == null || registerPasswordInput == null || 
+                registerConfirmPasswordInput == null)
+                return;
+
             registerUsernameInput.text = string.Empty;
             registerPasswordInput.text = string.Empty;
             registerConfirmPasswordInput.text = string.Empty;

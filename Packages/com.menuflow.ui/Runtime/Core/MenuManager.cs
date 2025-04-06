@@ -6,6 +6,7 @@ using MenuFlow.Interfaces;
 using MenuFlow.ScriptableObjects;
 using MenuFlow.Components;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 namespace MenuFlow.Core
 {
@@ -33,6 +34,12 @@ namespace MenuFlow.Core
         private bool isTransitioning;
         private string currentScene;
 
+        // Events
+        /// <summary>
+        /// Invoked after a menu transition is complete.
+        /// </summary>
+        public UnityEvent onTransitionComplete = new UnityEvent();
+
         /// <summary>
         /// Gets the singleton instance of the MenuManager.
         /// </summary>
@@ -55,10 +62,6 @@ namespace MenuFlow.Core
                     if (!string.IsNullOrEmpty(targetScene) && targetScene != SceneManager.GetActiveScene().name)
                     {
                         SceneManager.LoadScene(targetScene);
-                    }
-                    else
-                    {
-                        OpenInitialPanel();
                     }
                 }
             }
@@ -91,20 +94,29 @@ namespace MenuFlow.Core
         private async void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             currentScene = scene.name;
-            
+
             // If we have an active menu for this scene, show it immediately
             if (activeMenu != null && activeMenu.SceneName == currentScene)
             {
                 var panel = GetOrCreateMenuPanel(activeMenu);
                 if (panel != null)
                 {
-                    await panel.Show();
+                    isTransitioning = true;
+                    try
+                    {
+                        await panel.Show();
+                    }
+                    finally
+                    {
+                        isTransitioning = false;
+                        onTransitionComplete.Invoke();
+                    }
                 }
             }
             // Otherwise check if it's the initial panel's scene
             else if (menuSystem.initialPanel != null && menuSystem.initialPanel.SceneName == currentScene)
             {
-                OpenInitialPanel();
+                await TransitionTo(menuSystem.initialPanel.name);
             }
         }
 
@@ -116,7 +128,7 @@ namespace MenuFlow.Core
         {
             if (menuSystem.initialPanel != null && activeMenu == null)
             {
-                _ = OpenMenu(menuSystem.initialPanel);
+                _ = TransitionTo(menuSystem.initialPanel.name);
             }
         }
 
@@ -136,13 +148,14 @@ namespace MenuFlow.Core
                 // Check if we need to change scenes
                 bool needsSceneChange = !string.IsNullOrEmpty(menuDefinition.SceneName) && menuDefinition.SceneName != currentScene;
 
-                // Only hide current menu if we're staying in the same scene
-                if (!needsSceneChange && activeMenu != null)
+                // Only exit current menu if we're staying in the same scene
+                if (activeMenu != null)
                 {
                     var currentPanel = GetMenuPanel(activeMenu);
                     if (currentPanel != null)
                     {
-                        await currentPanel.Hide();
+                        await currentPanel.Exit();
+                        currentPanel.SetVisible(needsSceneChange);
                     }
                 }
 
@@ -173,6 +186,7 @@ namespace MenuFlow.Core
             finally
             {
                 isTransitioning = false;
+                onTransitionComplete.Invoke();
             }
         }
 
@@ -203,11 +217,11 @@ namespace MenuFlow.Core
 
             // Find the menu definition
             MenuDefinition targetMenu = null;
-            
+
             // First check current scene
             var currentSceneEntry = menuSystem.scenes
                 .FirstOrDefault(entry => entry.sceneName == currentScene);
-            
+
             if (currentSceneEntry != null)
             {
                 targetMenu = currentSceneEntry.panels

@@ -94,21 +94,30 @@ namespace PixelPunk.API.Core
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (typeof(TResponse) == typeof(EmptyResponse))
+                string responseText = request.downloadHandler.text;
+                Debug.Log($"[API] Response received for {endpoint}: {responseText}");
+                
+                if (string.IsNullOrEmpty(responseText))
                 {
-                    onSuccess?.Invoke(new EmptyResponse() as TResponse ?? new TResponse());
+                    onError?.Invoke("Empty response received from server");
+                    yield break;
                 }
-                else if (!string.IsNullOrEmpty(request.downloadHandler.text))
+
+                try
                 {
-                    var response = JsonUtility.FromJson<TResponse>(request.downloadHandler.text);
-                    if (response != null)
+                    var response = JsonUtility.FromJson<TResponse>(responseText);
+                    if (response == null)
                     {
-                        onSuccess?.Invoke(response);
+                        Debug.LogError($"[API] Failed to deserialize response for {endpoint}. Response text: {responseText}");
+                        onError?.Invoke("Invalid response format");
+                        yield break;
                     }
-                    else
-                    {
-                        onError?.Invoke("Failed to parse response");
-                    }
+                    onSuccess?.Invoke(response);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[API] Error parsing response for {endpoint}: {ex.Message}");
+                    onError?.Invoke("Error parsing response");
                 }
             }
             else

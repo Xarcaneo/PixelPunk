@@ -13,12 +13,12 @@ namespace PixelPunk.API.Models
         /// <summary>
         /// Gets or sets the username for login.
         /// </summary>
-        public string Username = string.Empty;
+        public string username = string.Empty;
 
         /// <summary>
         /// Gets or sets the password for login.
         /// </summary>
-        public string Password = string.Empty;
+        public string password = string.Empty;
     }
 
     /// <summary>
@@ -30,12 +30,12 @@ namespace PixelPunk.API.Models
         /// <summary>
         /// Gets or sets the username for registration.
         /// </summary>
-        public string Username = string.Empty;
+        public string username = string.Empty;
 
         /// <summary>
         /// Gets or sets the password for registration.
         /// </summary>
-        public string Password = string.Empty;
+        public string password = string.Empty;
     }
 
     /// <summary>
@@ -47,11 +47,11 @@ namespace PixelPunk.API.Models
         /// <summary>
         /// Gets or sets the access token for API authentication.
         /// </summary>
-        public string AccessToken = string.Empty;
+        public string accessToken = string.Empty;
 
         /// <summary>
         /// Gets or sets the refresh token for obtaining new access tokens.
         /// </summary>
-        public string RefreshToken = string.Empty;
+        public string refreshToken = string.Empty;
     }
 }

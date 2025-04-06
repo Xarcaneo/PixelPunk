@@ -46,11 +46,18 @@ namespace PixelPunk.API.Services
         /// <param name="refreshToken">The refresh token to save</param>
         private void SaveTokens(string accessToken, string refreshToken)
         {
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+            {
+                Debug.LogError("[Auth] Received empty tokens! Access token is null: " + (accessToken == null) + ", Refresh token is null: " + (refreshToken == null));
+                return;
+            }
+
             _currentAccessToken = accessToken;
             _currentRefreshToken = refreshToken;
             PlayerPrefs.SetString(AUTH_TOKEN_KEY, accessToken);
             PlayerPrefs.SetString(REFRESH_TOKEN_KEY, refreshToken);
             PlayerPrefs.Save();
+            Debug.Log($"[Auth] Tokens saved successfully. Access token length: {accessToken.Length}, Refresh token length: {refreshToken.Length}");
         }
 
         /// <summary>
@@ -97,11 +104,21 @@ namespace PixelPunk.API.Services
                 HttpMethod.POST,
                 request,
                 response => {
-                    SaveTokens(response.AccessToken, response.RefreshToken);
+                    SaveTokens(response.accessToken, response.refreshToken);
                     onComplete?.Invoke(true);
                 },
                 onError
             ) ?? throw new InvalidOperationException("ApiClient.Instance is null");
+        }
+
+        /// <summary>
+        /// Checks if the user is currently logged in by verifying stored tokens.
+        /// </summary>
+        /// <returns>True if valid tokens exist, false otherwise.</returns>
+        public bool IsLoggedIn()
+        {
+            LoadTokens();
+            return !string.IsNullOrEmpty(_currentAccessToken) && !string.IsNullOrEmpty(_currentRefreshToken);
         }
 
         /// <summary>

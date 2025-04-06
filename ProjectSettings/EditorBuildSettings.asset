@@ -9,11 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/LoginScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/LoadingScene.unity
-    guid: 0f2449c079d15d4458dbea6e0b854586
-  - enabled: 1
     path: Assets/Scenes/GamePlayScene.unity
     guid: 6a6de4de442783a439127432c9c613fa
+  - enabled: 1
+    path: Assets/Scenes/SplashScreen.unity
+    guid: fc7f28d4a344e1648bbb113e7a6b6a5b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -104,22 +104,21 @@ namespace MenuFlow.Components
         }
 
         /// <summary>
-        /// Hides the panel by making it invisible and non-interactive.
-        /// Also hides all parent menus in the hierarchy.
-        /// Can be overridden to add custom hide animations or behavior.
+        /// Exits this menu panel and all parent menus in the hierarchy.
+        /// Can be overridden to add custom exit animations or behavior.
         /// </summary>
-        /// <returns>A task that completes when the hide operation is finished.</returns>
-        public virtual async Task Hide()
+        /// <returns>A task that completes when the exit operation is finished.</returns>
+        public virtual async Task Exit()
         {
             if (isTransitioning)
             {
-                Debug.Log($"[MenuPanel] Hide skipped - already transitioning: {gameObject.name}");
+                Debug.Log($"[MenuPanel] Exit skipped - already transitioning: {gameObject.name}");
                 return;
             }
             
             isTransitioning = true;
 
-            // First hide parent menus if they exist
+            // First exit parent menus if they exist
             if (menuDefinition != null && menuDefinition.ParentMenu != null)
             {
                 var parentInstance = menuDefinition.ParentMenu.CurrentInstance;
@@ -128,13 +127,12 @@ namespace MenuFlow.Components
                     var parentPanel = parentInstance.GetComponent<MenuPanel>();
                     if (parentPanel != null)
                     {
-                        await parentPanel.Hide();
+                        await parentPanel.Exit();
                     }
                 }
             }
 
             onHide?.Invoke();
-            SetVisible(false);
             isTransitioning = false;
         }
 

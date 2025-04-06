@@ -20,10 +20,10 @@ namespace MenuFlow.Interfaces
         Task Show();
         
         /// <summary>
-        /// Hides the menu panel with an optional transition
+        /// Exits the menu panel and its parent hierarchy with an optional transition
         /// </summary>
-        /// <returns>Task that completes when the transition is finished</returns>
-        Task Hide();
+        /// <returns>Task that completes when the exit transition is finished</returns>
+        Task Exit();
         
         /// <summary>
         /// Immediately shows or hides the panel without transition

@@ -43,6 +43,12 @@ namespace PixelPunk.API.Services
         string? GetAccessToken();
 
         /// <summary>
+        /// Checks if the user is currently logged in by verifying stored tokens.
+        /// </summary>
+        /// <returns>True if valid tokens exist, false otherwise.</returns>
+        bool IsLoggedIn();
+
+        /// <summary>
         /// Clears all stored authentication tokens.
         /// </summary>
         void ClearTokens();
