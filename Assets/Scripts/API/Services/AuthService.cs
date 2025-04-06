@@ -12,31 +12,17 @@ namespace PixelPunk.API.Services
     /// Service for handling user authentication operations.
     /// Manages user login, registration, and token storage.
     /// </summary>
-    public class AuthService : MonoBehaviour
+    public class AuthService : IAuthService
     {
         private const string AUTH_TOKEN_KEY = "auth_token";
         private const string REFRESH_TOKEN_KEY = "refresh_token";
 
-        /// <summary>
-        /// Gets the singleton instance of the AuthService.
-        /// </summary>
-        public static AuthService? Instance { get; private set; }
-
         private string? _currentAccessToken;
         private string? _currentRefreshToken;
 
-        private void Awake()
+        public AuthService()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                LoadTokens();
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            LoadTokens();
         }
 
         /// <summary>

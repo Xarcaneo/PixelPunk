@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using PixelPunk.API.Services;
+using PixelPunk.Core;
 
 namespace PixelPunk.API.Core
 {
@@ -29,12 +30,15 @@ namespace PixelPunk.API.Core
         /// </summary>
         public string BaseUrl => baseUrl;
 
+        private IAuthService? _authService;
+
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
+                _authService = ServiceRegistry.Instance?.GetService<IAuthService>();
             }
             else
             {
@@ -79,7 +83,7 @@ namespace PixelPunk.API.Core
             // Add auth header if required
             if (requiresAuth)
             {
-                string? token = AuthService.Instance?.GetAccessToken();
+                string? token = _authService?.GetAccessToken();
                 if (!string.IsNullOrEmpty(token))
                 {
                     request.SetRequestHeader("Authorization", $"Bearer {token}");
