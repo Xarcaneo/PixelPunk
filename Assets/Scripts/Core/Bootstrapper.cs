@@ -21,6 +21,7 @@ namespace PixelPunk.Core
             ServiceRegistry.Initialize();
 
             // Register core services
+            ServiceRegistry.Instance?.RegisterService<IPlayerDataService>(new PlayerDataService());
             ServiceRegistry.Instance?.RegisterService<IAuthService>(new AuthService());
         }
     }

@@ -70,14 +70,27 @@ namespace PixelPunk.UI.Auth
         /// </summary>
         private IAuthService? _authService;
 
+        /// <summary>
+        /// Reference to the player data service.
+        /// Retrieved from <see cref="ServiceRegistry"/> during initialization.
+        /// </summary>
+        private IPlayerDataService? _playerDataService;
+
         private void Start()
         {
             _authService = ServiceRegistry.Instance?.GetService<IAuthService>();
+            _playerDataService = ServiceRegistry.Instance?.GetService<IPlayerDataService>();
+
             if (_authService == null)
             {
                 UpdateLoginStatus("Auth service not available");
                 UpdateRegisterStatus("Auth service not available");
                 return;
+            }
+
+            if (_playerDataService == null)
+            {
+                Debug.LogWarning("Player data service not available");
             }
 
             loginButton.onClick.AddListener(OnLoginClick);
@@ -93,6 +106,8 @@ namespace PixelPunk.UI.Auth
         /// <param name="message">Status message for login operations</param>
         private void UpdateLoginStatus(string message)
         {
+            if (this == null || !gameObject) return;
+            
             loginStatusText.text = message;
         }
 
@@ -102,6 +117,8 @@ namespace PixelPunk.UI.Auth
         /// <param name="message">Status message for registration operations</param>
         private void UpdateRegisterStatus(string message)
         {
+            if (this == null || !gameObject) return;
+            
             registerStatusText.text = message;
         }
 
@@ -137,15 +154,44 @@ namespace PixelPunk.UI.Auth
                     if (success)
                     {
                         UpdateLoginStatus("Login successful!");
-                        await MenuManager.Instance.TransitionTo(MenuFlow.MenuFlowConstants.Menus.GameOverlayMenu);
+                        // Don't re-enable UI elements since we're transitioning away
+                        await FetchPlayerDataAndTransition();
                     }
-                    SetLoginInteractable(true);
+                    else
+                    {
+                        SetLoginInteractable(true);
+                    }
                 },
                 error => {
                     UpdateLoginStatus($"Login failed: {error}");
                     SetLoginInteractable(true);
                 }
             ));
+        }
+
+        /// <summary>
+        /// Fetches player data and transitions to the game overlay menu.
+        /// </summary>
+        private async Task FetchPlayerDataAndTransition()
+        {
+            if (_playerDataService != null)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                StartCoroutine(_playerDataService.FetchPlayerData(
+                    success => {
+                        tcs.SetResult(true);
+                    },
+                    error => {
+                        Debug.LogError($"Failed to fetch player data: {error}");
+                        tcs.SetResult(false);
+                    }
+                ));
+
+                await tcs.Task;
+            }
+
+            await MenuManager.Instance.TransitionTo(MenuFlow.MenuFlowConstants.Menus.GameOverlayMenu);
         }
 
         /// <summary>
@@ -187,10 +233,40 @@ namespace PixelPunk.UI.Auth
                 success => {
                     if (success)
                     {
-                        UpdateRegisterStatus("Registration successful! You can now log in.");
-                        ClearRegisterFields();
+                        // After successful registration, attempt to log in automatically
+                        var loginRequest = new LoginRequest
+                        {
+                            username = registerUsernameInput.text,
+                            password = registerPasswordInput.text
+                        };
+
+                        StartCoroutine(_authService.Login(
+                            loginRequest,
+                            async loginSuccess => {
+                                if (loginSuccess)
+                                {
+                                    UpdateRegisterStatus("Registration successful! Logging you in...");
+                                    // Don't re-enable UI elements since we're transitioning away
+                                    await FetchPlayerDataAndTransition();
+                                }
+                                else
+                                {
+                                    UpdateRegisterStatus("Registration successful! Please log in.");
+                                    ClearRegisterFields();
+                                    SetRegisterInteractable(true);
+                                }
+                            },
+                            error => {
+                                UpdateRegisterStatus("Registration successful! Please log in.");
+                                ClearRegisterFields();
+                                SetRegisterInteractable(true);
+                            }
+                        ));
                     }
-                    SetRegisterInteractable(true);
+                    else
+                    {
+                        SetRegisterInteractable(true);
+                    }
                 },
                 error => {
                     UpdateRegisterStatus($"Registration failed: {error}");
@@ -200,48 +276,42 @@ namespace PixelPunk.UI.Auth
         }
 
         /// <summary>
-        /// Controls the interactive state of login UI elements.
-        /// </summary>
-        private void SetLoginInteractable(bool interactable)
-        {
-            // Check if the UI elements still exist before accessing them
-            if (this == null || !gameObject || loginUsernameInput == null || loginPasswordInput == null || loginButton == null)
-                return;
-
-            loginUsernameInput.interactable = interactable;
-            loginPasswordInput.interactable = interactable;
-            loginButton.interactable = interactable;
-        }
-
-        /// <summary>
-        /// Controls the interactive state of registration UI elements.
-        /// </summary>
-        private void SetRegisterInteractable(bool interactable)
-        {
-            // Check if the UI elements still exist before accessing them
-            if (this == null || !gameObject || registerUsernameInput == null || registerPasswordInput == null || 
-                registerConfirmPasswordInput == null || registerButton == null)
-                return;
-
-            registerUsernameInput.interactable = interactable;
-            registerPasswordInput.interactable = interactable;
-            registerConfirmPasswordInput.interactable = interactable;
-            registerButton.interactable = interactable;
-        }
-
-        /// <summary>
         /// Clears all registration input fields.
         /// </summary>
         private void ClearRegisterFields()
         {
-            // Check if the UI elements still exist before accessing them
-            if (this == null || !gameObject || registerUsernameInput == null || registerPasswordInput == null || 
-                registerConfirmPasswordInput == null)
-                return;
+            if (this == null || !gameObject) return;
+            
+            registerUsernameInput.text = "";
+            registerPasswordInput.text = "";
+            registerConfirmPasswordInput.text = "";
+        }
 
-            registerUsernameInput.text = string.Empty;
-            registerPasswordInput.text = string.Empty;
-            registerConfirmPasswordInput.text = string.Empty;
+        /// <summary>
+        /// Sets the interactability of login-related UI elements.
+        /// </summary>
+        /// <param name="interactable">Whether the elements should be interactable</param>
+        private void SetLoginInteractable(bool interactable)
+        {
+            if (this == null || !gameObject) return;
+            
+            loginButton.interactable = interactable;
+            loginUsernameInput.interactable = interactable;
+            loginPasswordInput.interactable = interactable;
+        }
+
+        /// <summary>
+        /// Sets the interactability of registration-related UI elements.
+        /// </summary>
+        /// <param name="interactable">Whether the elements should be interactable</param>
+        private void SetRegisterInteractable(bool interactable)
+        {
+            if (this == null || !gameObject) return;
+            
+            registerButton.interactable = interactable;
+            registerUsernameInput.interactable = interactable;
+            registerPasswordInput.interactable = interactable;
+            registerConfirmPasswordInput.interactable = interactable;
         }
     }
 }
