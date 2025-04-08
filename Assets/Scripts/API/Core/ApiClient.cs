@@ -67,7 +67,9 @@ namespace PixelPunk.API.Core
             bool requiresAuth = false) where TResponse : class, new()
         {
             string url = $"{baseUrl}/{endpoint.TrimStart('/')}";
+            Debug.Log($"[API] Sending request to URL: {url}");
             string? json = requestData != null ? JsonUtility.ToJson(requestData) : null;
+            Debug.Log($"[API] Request body: {json}");
 
             using var request = new UnityWebRequest(url, method.ToString());
             
@@ -99,7 +101,15 @@ namespace PixelPunk.API.Core
                 
                 if (string.IsNullOrEmpty(responseText))
                 {
-                    onError?.Invoke("Empty response received from server");
+                    if (typeof(TResponse) == typeof(EmptyResponse))
+                    {
+                        onSuccess?.Invoke(new TResponse());
+                    }
+                    else
+                    {
+                        Debug.LogError($"[API] Empty response received for {endpoint} but expected type {typeof(TResponse)}");
+                        onError?.Invoke("Empty response received from server");
+                    }
                     yield break;
                 }
 
@@ -122,6 +132,7 @@ namespace PixelPunk.API.Core
             }
             else
             {
+                Debug.LogError($"[API] Request failed for {endpoint}: {request.error}");
                 onError?.Invoke(request.error);
             }
         }

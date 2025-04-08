@@ -121,18 +121,6 @@ namespace MenuFlow.Core
         }
 
         /// <summary>
-        /// Opens the initial menu panel defined in the MenuSystem.
-        /// Only opens if no menu is currently active.
-        /// </summary>
-        private void OpenInitialPanel()
-        {
-            if (menuSystem.initialPanel != null && activeMenu == null)
-            {
-                _ = TransitionTo(menuSystem.initialPanel.name);
-            }
-        }
-
-        /// <summary>
         /// Opens a menu panel and handles scene transitions if needed.
         /// </summary>
         /// <param name="menuDefinition">The menu to open.</param>
@@ -228,14 +216,25 @@ namespace MenuFlow.Core
                     .FirstOrDefault(panel => panel != null && panel.name == menuName);
             }
 
-            // If not found in current scene, check all scenes
+            // If not found in current scene, find it in its own scene
             if (targetMenu == null)
             {
-                foreach (var entry in menuSystem.scenes)
+                // First find any menu with this name to get its scene
+                targetMenu = menuSystem.scenes
+                    .SelectMany(scene => scene.panels)
+                    .FirstOrDefault(panel => panel != null && panel.name == menuName);
+
+                if (targetMenu != null)
                 {
-                    targetMenu = entry.panels
-                        .FirstOrDefault(panel => panel != null && panel.name == menuName);
-                    if (targetMenu != null) break;
+                    // Now we can use the menu's scene name to get the right scene
+                    var targetScene = menuSystem.scenes
+                        .FirstOrDefault(scene => scene.sceneName == targetMenu.SceneName);
+
+                    if (targetScene != null)
+                    {
+                        targetMenu = targetScene.panels
+                            .First(panel => panel != null && panel.name == menuName);
+                    }
                 }
             }
 
