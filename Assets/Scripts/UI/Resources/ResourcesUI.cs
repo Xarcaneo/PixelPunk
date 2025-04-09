@@ -1,25 +1,24 @@
 #nullable enable
 
 using UnityEngine;
+using TMPro;
 using PixelPunk.API.Services;
 using PixelPunk.Core;
 using PixelPunk.API.Models;
+using PixelPunk.Game.Resources;
 
 namespace PixelPunk.UI.Resources
 {
     /// <summary>
     /// Manages the UI display of player resources in the PixelPunk game.
     /// </summary>
-    /// <remarks>
-    /// This component is responsible for:
-    /// <list type="bullet">
-    /// <item><description>Displaying current resource amounts (Gold, Silver, Coal)</description></item>
-    /// <item><description>Updating resource values when they change</description></item>
-    /// <item><description>Formatting resource numbers for display</description></item>
-    /// </list>
-    /// </remarks>
     public class ResourcesUI : MonoBehaviour
     {
+        [Header("Resource Text Components")]
+        [SerializeField] private TMP_Text goldText = null!;
+        [SerializeField] private TMP_Text silverText = null!;
+        [SerializeField] private TMP_Text coalText = null!;
+
         private IPlayerDataService? _playerDataService;
 
         private void Start()
@@ -35,10 +34,10 @@ namespace PixelPunk.UI.Resources
             // Subscribe to player data updates
             _playerDataService.OnPlayerDataUpdated += OnPlayerDataUpdated;
 
-            // Log initial data if available
+            // Update UI with initial data if available
             if (_playerDataService.PlayerData != null)
             {
-                LogResources(_playerDataService.PlayerData);
+                UpdateResourceDisplay(_playerDataService.PlayerData);
             }
         }
 
@@ -51,35 +50,29 @@ namespace PixelPunk.UI.Resources
         }
 
         /// <summary>
-        /// Called when player data is updated.
+        /// Handles updates to player data, including resource changes.
         /// </summary>
         private void OnPlayerDataUpdated()
         {
-            if (_playerDataService?.PlayerData == null)
+            var playerData = _playerDataService?.PlayerData;
+            if (playerData == null)
             {
                 Debug.LogWarning("[ResourcesUI] Received player data update but data is null");
                 return;
             }
 
-            LogResources(_playerDataService.PlayerData);
+            UpdateResourceDisplay(playerData);
         }
 
         /// <summary>
-        /// Logs the current resource values to the console.
+        /// Updates the UI display with current resource values.
         /// </summary>
-        /// <param name="playerData">The player data containing resources</param>
-        private void LogResources(PlayerData playerData)
+        /// <param name="playerData">The player data containing resource information</param>
+        private void UpdateResourceDisplay(PlayerData playerData)
         {
-            if (playerData.resources == null || playerData.resources.Count == 0)
-            {
-                Debug.LogWarning("[ResourcesUI] Player data has no resources");
-                return;
-            }
-
-            foreach (var resource in playerData.resources)
-            {
-                Debug.Log($"[ResourcesUI] {resource.resourceName}: {resource.amount} (Last updated: {resource.LastUpdatedAt})");
-            }
+            goldText.text = $"Gold: {playerData.GetResourceAmount(ResourceType.Gold)}";
+            silverText.text = $"Silver: {playerData.GetResourceAmount(ResourceType.Silver)}";
+            coalText.text = $"Coal: {playerData.GetResourceAmount(ResourceType.Coal)}";
         }
     }
 }

@@ -20,5 +20,5 @@ MonoBehaviour:
   serializedNodeData:
   - nodeId: RegisterMenu
     data:
-      position: {x: 0, y: 0}
+      position: {x: 100, y: 250.4}
       outputConnections: []

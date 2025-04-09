@@ -17,4 +17,8 @@ MonoBehaviour:
   sceneName: SplashScreen
   menuPrefab: {fileID: 5466066820499258379, guid: e4ff957fa8ef7e1469a898759f354a40, type: 3}
   sceneInstance: {fileID: 0}
-  serializedNodeData: []
+  serializedNodeData:
+  - nodeId: SplashScreenMenu
+    data:
+      position: {x: 100, y: 100}
+      outputConnections: []
