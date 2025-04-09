@@ -25,6 +25,7 @@ MonoBehaviour:
     sceneName: GamePlayScene
     panels:
     - {fileID: 11400000, guid: b6cbcf5981adb8841870d87fcb1ff2d7, type: 2}
+    - {fileID: 11400000, guid: ba9f5ffd655adf04b8ae88701855310f, type: 2}
   - sceneAsset: {fileID: 102900000, guid: fc7f28d4a344e1648bbb113e7a6b6a5b, type: 3}
     sceneName: SplashScreen
     panels:

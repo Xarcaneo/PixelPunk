@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using PixelPunk.API.Core;
 using PixelPunk.API.Models;
+using PixelPunk.Core;
 
 namespace PixelPunk.API.Services
 {
@@ -14,9 +15,6 @@ namespace PixelPunk.API.Services
     /// </summary>
     public class AuthService : IAuthService
     {
-        private const string AUTH_TOKEN_KEY = "auth_token";
-        private const string REFRESH_TOKEN_KEY = "refresh_token";
-
         private string? _currentAccessToken;
         private string? _currentRefreshToken;
 
@@ -35,27 +33,27 @@ namespace PixelPunk.API.Services
         /// </summary>
         private void LoadTokens()
         {
-            _currentAccessToken = PlayerPrefs.GetString(AUTH_TOKEN_KEY, null);
-            _currentRefreshToken = PlayerPrefs.GetString(REFRESH_TOKEN_KEY, null);
+            _currentAccessToken = PlayerPrefs.GetString(PlayerPrefsKeys.Auth.AccessToken, null);
+            _currentRefreshToken = PlayerPrefs.GetString(PlayerPrefsKeys.Auth.RefreshToken, null);
         }
 
         /// <summary>
-        /// Saves authentication tokens to PlayerPrefs.
+        /// Saves the provided authentication tokens to persistent storage.
         /// </summary>
         /// <param name="accessToken">The access token to save</param>
         /// <param name="refreshToken">The refresh token to save</param>
-        private void SaveTokens(string accessToken, string refreshToken)
+        public void SaveTokens(string accessToken, string refreshToken)
         {
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
             {
-                Debug.LogError("[Auth] Received empty tokens! Access token is null: " + (accessToken == null) + ", Refresh token is null: " + (refreshToken == null));
+                Debug.LogError("[Auth] Cannot save empty tokens");
                 return;
             }
 
             _currentAccessToken = accessToken;
             _currentRefreshToken = refreshToken;
-            PlayerPrefs.SetString(AUTH_TOKEN_KEY, accessToken);
-            PlayerPrefs.SetString(REFRESH_TOKEN_KEY, refreshToken);
+            PlayerPrefs.SetString(PlayerPrefsKeys.Auth.AccessToken, accessToken);
+            PlayerPrefs.SetString(PlayerPrefsKeys.Auth.RefreshToken, refreshToken);
             PlayerPrefs.Save();
             Debug.Log($"[Auth] Tokens saved successfully. Access token length: {accessToken.Length}, Refresh token length: {refreshToken.Length}");
         }
@@ -67,8 +65,8 @@ namespace PixelPunk.API.Services
         {
             _currentAccessToken = null;
             _currentRefreshToken = null;
-            PlayerPrefs.DeleteKey(AUTH_TOKEN_KEY);
-            PlayerPrefs.DeleteKey(REFRESH_TOKEN_KEY);
+            PlayerPrefs.DeleteKey(PlayerPrefsKeys.Auth.AccessToken);
+            PlayerPrefs.DeleteKey(PlayerPrefsKeys.Auth.RefreshToken);
             PlayerPrefs.Save();
         }
 
