@@ -1,5 +1,8 @@
+#nullable enable
+
 using UnityEngine;
 using PixelPunk.Buildings.Core;
+using System;
 
 namespace PixelPunk.Buildings.Components
 {
@@ -14,15 +17,20 @@ namespace PixelPunk.Buildings.Components
         private float holdTimeThreshold = 1f;
         
         [SerializeField, Tooltip("Reference to the building system. Will find one if not set")]
-        private BuildingSystem buildingSystem;
+        private BuildingSystem? buildingSystem;
+
+        /// <summary>
+        /// Invoked when the building is clicked but not held long enough to drag
+        /// </summary>
+        public event Action<BuildingDragHandler>? OnQuickClick;
         
         private bool isHolding;
         private float holdTime;
         private bool isDragging;
-        private Camera mainCamera;
+        private Camera? mainCamera;
         private Vector3 offset;
-        private IGridPlaceable placeable;
-        private CameraController cameraController;
+        private IGridPlaceable? placeable;
+        private CameraController? cameraController;
 
         /// <summary>
         /// Gets whether the building is currently being dragged.
@@ -31,17 +39,37 @@ namespace PixelPunk.Buildings.Components
 
         private void Start()
         {
-            mainCamera = Camera.main;
+            mainCamera = Camera.main ?? FindFirstObjectByType<Camera>();
+            if (mainCamera == null)
+            {
+                Debug.LogError("[BuildingDragHandler] No camera found in scene!");
+                enabled = false;
+                return;
+            }
+
+            buildingSystem ??= FindFirstObjectByType<BuildingSystem>();
             if (buildingSystem == null)
             {
-                buildingSystem = FindFirstObjectByType<BuildingSystem>();
+                Debug.LogError("[BuildingDragHandler] No BuildingSystem found in scene!");
+                enabled = false;
+                return;
             }
+
             placeable = GetComponent<IGridPlaceable>();
-            cameraController = mainCamera?.GetComponent<CameraController>();
+            if (placeable == null)
+            {
+                Debug.LogError("[BuildingDragHandler] No IGridPlaceable component found!");
+                enabled = false;
+                return;
+            }
+
+            cameraController = mainCamera.GetComponent<CameraController>();
         }
         
         private void Update()
         {
+            if (!enabled) return;
+
             if (isDragging)
             {
                 UpdateDragPosition(GetMouseWorldPosition());
@@ -63,6 +91,11 @@ namespace PixelPunk.Buildings.Components
                 
                 if (Input.GetMouseButtonUp(0))
                 {
+                    // If released before threshold, trigger quick click
+                    if (holdTime < holdTimeThreshold)
+                    {
+                        OnQuickClick?.Invoke(this);
+                    }
                     isHolding = false;
                     holdTime = 0f;
                 }
@@ -71,6 +104,7 @@ namespace PixelPunk.Buildings.Components
 
         private void OnMouseDown()
         {
+            if (!enabled) return;
             isHolding = true;
             holdTime = 0f;
         }
@@ -80,6 +114,8 @@ namespace PixelPunk.Buildings.Components
         /// </summary>
         public void StartDragging()
         {
+            if (!enabled || mainCamera == null || buildingSystem == null) return;
+
             isDragging = true;
             isHolding = false;
             Vector3 mousePosition = GetMouseWorldPosition();
@@ -95,6 +131,8 @@ namespace PixelPunk.Buildings.Components
         /// <param name="position">Current mouse/touch position in world space.</param>
         public void UpdateDragPosition(Vector3 position)
         {
+            if (!enabled || buildingSystem == null) return;
+
             Vector3 targetPosition = position + offset;
             Vector3 snappedPosition = buildingSystem.GetSnappedPosition(targetPosition);
             transform.position = snappedPosition;
@@ -105,7 +143,7 @@ namespace PixelPunk.Buildings.Components
         /// </summary>
         public void StopDragging()
         {
-            if (placeable != null && buildingSystem.CanPlaceAt(transform.position, placeable))
+            if (placeable != null && buildingSystem != null && buildingSystem.CanPlaceAt(transform.position, placeable))
             {
                 buildingSystem.PlaceBuilding(transform.position, placeable);
             }
@@ -121,6 +159,8 @@ namespace PixelPunk.Buildings.Components
         /// <returns>World position at the mouse/touch point.</returns>
         private Vector3 GetMouseWorldPosition()
         {
+            if (mainCamera == null) return Vector3.zero;
+
             Vector3 mousePosition = Input.mousePosition;
             mousePosition.z = -mainCamera.transform.position.z;
             return mainCamera.ScreenToWorldPoint(mousePosition);

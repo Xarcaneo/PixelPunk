@@ -22,11 +22,11 @@ public class CameraController : MonoBehaviour
     private BuildingDragHandler? activeBuilding;
 
     private void Start()
-    {
-        cam = Camera.main;
+    { 
+        cam = Camera.main ?? FindFirstObjectByType<Camera>();
         if (cam == null)
         {
-            Debug.LogError("[CameraController] No main camera found!");
+            Debug.LogError("[CameraController] No camera found in scene!");
             enabled = false;
             return;
         }
@@ -42,54 +42,60 @@ public class CameraController : MonoBehaviour
     {
         if (!CanHandleInput() || cam == null) return;
 
-        // Handle mobile touch input
+        // Handle input based on platform
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-            
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    isDragging = true;
-                    lastMousePosition = touch.position;
-                    break;
-                    
-                case TouchPhase.Moved:
-                    if (isDragging)
-                    {
-                        Vector2 currentPos = touch.position;
-                        Vector2 difference = currentPos - lastMousePosition;
-                        MoveCamera(difference);
-                        lastMousePosition = currentPos;
-                    }
-                    break;
-                    
-                case TouchPhase.Ended:
-                    isDragging = false;
-                    break;
-            }
+            HandleTouchInput();
         }
-        // Handle mouse input
         else
         {
-            if (Input.GetMouseButtonDown(0))
-            {
+            HandleMouseInput();
+        }
+    }
+
+    private void HandleTouchInput()
+    {
+        Touch touch = Input.GetTouch(0);
+        
+        switch (touch.phase)
+        {
+            case TouchPhase.Began:
+                lastMousePosition = touch.position;
                 isDragging = true;
-                lastMousePosition = Input.mousePosition;
-            }
+                break;
 
-            if (Input.GetMouseButton(0) && isDragging)
-            {
-                Vector2 currentPos = Input.mousePosition;
-                Vector2 difference = currentPos - lastMousePosition;
-                MoveCamera(difference);
-                lastMousePosition = currentPos;
-            }
+            case TouchPhase.Moved:
+                if (isDragging)
+                {
+                    Vector2 delta = touch.position - lastMousePosition;
+                    MoveCamera(delta);
+                    lastMousePosition = touch.position;
+                }
+                break;
 
-            if (Input.GetMouseButtonUp(0))
-            {
+            case TouchPhase.Ended:
+            case TouchPhase.Canceled:
                 isDragging = false;
-            }
+                break;
+        }
+    }
+
+    private void HandleMouseInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            lastMousePosition = Input.mousePosition;
+            isDragging = true;
+        }
+        else if (Input.GetMouseButton(0) && isDragging)
+        {
+            Vector2 delta = (Vector2)Input.mousePosition - lastMousePosition;
+            MoveCamera(delta);
+            lastMousePosition = Input.mousePosition;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
         }
     }
 
