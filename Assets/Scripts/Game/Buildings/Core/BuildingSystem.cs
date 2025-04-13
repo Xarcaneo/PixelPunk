@@ -16,6 +16,11 @@ namespace PixelPunk.Buildings.Core
         private Transform buildingsParent;
 
         /// <summary>
+        /// Gets the GridSystem component used for coordinate conversion
+        /// </summary>
+        public GridSystem GridSystem => gridSystem;
+
+        /// <summary>
         /// Dictionary tracking placed buildings by their grid position
         /// </summary>
         private readonly Dictionary<Vector3Int, IGridPlaceable> placedBuildings = new Dictionary<Vector3Int, IGridPlaceable>();

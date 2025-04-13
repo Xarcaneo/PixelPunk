@@ -15,5 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/SplashScreen.unity
     guid: fc7f28d4a344e1648bbb113e7a6b6a5b
   m_configObjects:
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 2678304b8ec683b42afde28dc7abb250, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

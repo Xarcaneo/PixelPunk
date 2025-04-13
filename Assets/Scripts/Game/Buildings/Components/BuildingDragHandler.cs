@@ -70,13 +70,46 @@ namespace PixelPunk.Buildings.Components
         {
             if (!enabled) return;
 
-            if (isDragging)
+            if (isDragging && mainCamera != null)
             {
-                UpdateDragPosition(GetMouseWorldPosition());
+                Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                mousePosition.z = transform.position.z;
+                
+                Vector3 targetPosition = mousePosition + offset;
+                
+                // Snap to grid
+                if (buildingSystem != null)
+                {
+                    Vector3 preSnapPos = targetPosition;
+                    targetPosition = buildingSystem.GridSystem.SnapToGrid(targetPosition);
+                    
+                    // Update placement overlay
+                    if (placeable != null)
+                    {
+                        bool isValidPlacement = buildingSystem.CanPlaceAt(targetPosition, placeable);
+                        buildingSystem.GridSystem.ShowPlacementOverlay(targetPosition, placeable.Size, isValidPlacement);
 
+                        // Apply grid offset during drag
+                        if (placeable is BasicBuilding building)
+                        {
+                            Vector3 beforeOffset = targetPosition;
+                            targetPosition += new Vector3(building.GridOffset.x, building.GridOffset.y, 0);
+                        }
+                    }
+                }
+                
+                transform.position = targetPosition;
+
+                // Disable camera panning while dragging
+                if (cameraController != null)
+                {
+                    cameraController.enabled = false;
+                }
+
+                // Check for mouse up to end dragging
                 if (Input.GetMouseButtonUp(0))
                 {
-                    StopDragging();
+                    OnEndDrag();
                 }
             }
             else if (isHolding)
@@ -105,12 +138,13 @@ namespace PixelPunk.Buildings.Components
         private void OnMouseDown()
         {
             if (!enabled) return;
+
             isHolding = true;
             holdTime = 0f;
         }
 
         /// <summary>
-        /// Initiates the dragging operation after hold threshold is met.
+        /// Called when dragging should begin. Initializes drag state and calculates initial offset.
         /// </summary>
         public void StartDragging()
         {
@@ -118,11 +152,67 @@ namespace PixelPunk.Buildings.Components
 
             isDragging = true;
             isHolding = false;
-            Vector3 mousePosition = GetMouseWorldPosition();
-            offset = transform.position - mousePosition;
 
-            // Notify camera that we're starting to drag
-            cameraController?.NotifyBuildingDragStarted(this);
+            Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = transform.position.z;
+
+            // Calculate offset based on grid snapping
+            if (buildingSystem != null && placeable != null)
+            {
+                Vector3 snappedMousePos = buildingSystem.GridSystem.SnapToGrid(mousePosition);
+                if (placeable is BasicBuilding building)
+                {
+                    snappedMousePos += new Vector3(building.GridOffset.x, building.GridOffset.y, 0);
+                }
+                offset = transform.position - snappedMousePos;
+            }
+            else
+            {
+                offset = transform.position - mousePosition;
+            }
+
+            
+            // Notify camera controller
+            if (cameraController != null)
+            {
+                cameraController.enabled = false;
+            }
+        }
+
+        public void OnBeginDrag()
+        {
+            if (!isHolding) return;
+            
+            isDragging = true;
+            offset = transform.position - mainCamera!.ScreenToWorldPoint(Input.mousePosition);
+            offset.z = 0;
+            
+            // Get the IGridPlaceable component if not already cached
+            placeable ??= GetComponent<IGridPlaceable>();
+            
+            // Cache camera controller reference
+            cameraController ??= FindFirstObjectByType<CameraController>();
+        }
+
+        public void OnEndDrag()
+        {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            isHolding = false;
+            holdTime = 0f;
+            
+            // Clear placement overlay
+            if (buildingSystem != null)
+            {
+                buildingSystem.GridSystem.ClearOverlay();
+            }
+
+            // Re-enable camera panning
+            if (cameraController != null)
+            {
+                cameraController.enabled = true;
+            }
         }
 
         /// <summary>
@@ -152,7 +242,7 @@ namespace PixelPunk.Buildings.Components
             // Notify camera that we're done dragging
             cameraController?.NotifyBuildingDragStopped(this);
         }
-
+ 
         /// <summary>
         /// Converts screen position to world position for the current building height.
         /// </summary>

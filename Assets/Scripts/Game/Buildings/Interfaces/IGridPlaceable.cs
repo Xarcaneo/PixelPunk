@@ -9,6 +9,11 @@ namespace PixelPunk.Buildings
     public interface IGridPlaceable
     {
         /// <summary>
+        /// Gets the size of the object in grid cells (width, height)
+        /// </summary>
+        Vector2Int Size { get; }
+
+        /// <summary>
         /// Validates if the object can be placed at the specified position.
         /// </summary>
         /// <param name="position">World position to check for placement.</param>

@@ -11,6 +11,19 @@ namespace PixelPunk.Buildings.Components
         [SerializeField, Tooltip("Size of the building in grid cells (width, height)")]
         private Vector2Int size = Vector2Int.one;
 
+        [SerializeField, Tooltip("Offset from grid cell center for fine-tuning building position")]
+        private Vector2 gridOffset = Vector2.zero;
+
+        /// <summary>
+        /// Gets the size of the building in grid cells
+        /// </summary>
+        public Vector2Int Size => size;
+
+        /// <summary>
+        /// Gets the offset from grid cell center
+        /// </summary>
+        public Vector2 GridOffset => gridOffset;
+
         /// <summary>
         /// Tracks whether the building has been placed on the grid
         /// </summary>
@@ -24,12 +37,7 @@ namespace PixelPunk.Buildings.Components
         /// <returns>True if placement is valid, false otherwise.</returns>
         public virtual bool CanBePlaced(Vector3 position)
         {
-            // Add your placement validation logic here
-            // For example:
-            // - Check if there's enough space for the building size
-            // - Check resource requirements
-            // - Check building restrictions
-            return true;
+            return !isPlaced;
         }
 
         /// <summary>
@@ -38,9 +46,10 @@ namespace PixelPunk.Buildings.Components
         /// <param name="position">World position where the building should be placed.</param>
         public virtual void Place(Vector3 position)
         {
-            transform.position = position;
+            // Apply grid offset when placing
+            Vector3 offsetPosition = position + new Vector3(gridOffset.x, gridOffset.y, 0);
+            transform.position = offsetPosition;
             isPlaced = true;
-            // Add any placement effects or initialization here
         }
 
         /// <summary>
