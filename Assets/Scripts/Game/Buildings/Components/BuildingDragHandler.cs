@@ -22,6 +22,7 @@ namespace PixelPunk.Buildings.Components
         private Camera mainCamera;
         private Vector3 offset;
         private IGridPlaceable placeable;
+        private CameraController cameraController;
 
         /// <summary>
         /// Gets whether the building is currently being dragged.
@@ -36,6 +37,7 @@ namespace PixelPunk.Buildings.Components
                 buildingSystem = FindFirstObjectByType<BuildingSystem>();
             }
             placeable = GetComponent<IGridPlaceable>();
+            cameraController = mainCamera?.GetComponent<CameraController>();
         }
         
         private void Update()
@@ -82,6 +84,9 @@ namespace PixelPunk.Buildings.Components
             isHolding = false;
             Vector3 mousePosition = GetMouseWorldPosition();
             offset = transform.position - mousePosition;
+
+            // Notify camera that we're starting to drag
+            cameraController?.NotifyBuildingDragStarted(this);
         }
 
         /// <summary>
@@ -103,8 +108,11 @@ namespace PixelPunk.Buildings.Components
             if (placeable != null && buildingSystem.CanPlaceAt(transform.position, placeable))
             {
                 buildingSystem.PlaceBuilding(transform.position, placeable);
-                isDragging = false;
             }
+            isDragging = false;
+
+            // Notify camera that we're done dragging
+            cameraController?.NotifyBuildingDragStopped(this);
         }
 
         /// <summary>
@@ -113,9 +121,9 @@ namespace PixelPunk.Buildings.Components
         /// <returns>World position at the mouse/touch point.</returns>
         private Vector3 GetMouseWorldPosition()
         {
-            Vector3 mousePos = Input.mousePosition;
-            mousePos.z = mainCamera.WorldToScreenPoint(transform.position).z;
-            return mainCamera.ScreenToWorldPoint(mousePos);
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = -mainCamera.transform.position.z;
+            return mainCamera.ScreenToWorldPoint(mousePosition);
         }
     }
 }

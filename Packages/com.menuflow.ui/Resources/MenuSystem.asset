@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce6583128279ea46ad6faa2ecf84972, type: 3}
   m_Name: MenuSystem
   m_EditorClassIdentifier: 
-  initialPanel: {fileID: 11400000, guid: b6cbcf5981adb8841870d87fcb1ff2d7, type: 2}
+  initialPanel: {fileID: 11400000, guid: 3d828b5fe3149874583aca25b725818f, type: 2}
   loadingScreenPrefab: {fileID: 1912575098979278683, guid: d3d713df5441be540aabf108147c4dae, type: 3}
   loadingScreenInstance: {fileID: 0}
   scenes:

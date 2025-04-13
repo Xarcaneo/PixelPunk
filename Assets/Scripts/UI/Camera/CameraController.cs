@@ -1,4 +1,7 @@
+#nullable enable
+
 using UnityEngine;
+using PixelPunk.Buildings.Components;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,17 +16,32 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minY = -50f;
     [SerializeField] private float maxY = 50f;
 
-    private Camera cam;
+    private Camera? cam;
     private Vector2 lastMousePosition;
     private bool isDragging = false;
+    private BuildingDragHandler? activeBuilding;
 
     private void Start()
     {
         cam = Camera.main;
+        if (cam == null)
+        {
+            Debug.LogError("[CameraController] No main camera found!");
+            enabled = false;
+            return;
+        }
+    }
+
+    private bool CanHandleInput()
+    {
+        // Don't handle input if a building is being dragged
+        return activeBuilding == null || !activeBuilding.IsDragging;
     }
 
     private void Update()
     {
+        if (!CanHandleInput() || cam == null) return;
+
         // Handle mobile touch input
         if (Input.touchCount > 0)
         {
@@ -77,6 +95,8 @@ public class CameraController : MonoBehaviour
 
     private void MoveCamera(Vector2 screenDelta)
     {
+        if (cam == null) return;
+
         // Convert screen movement to world space movement
         float verticalSize = cam.orthographicSize * 2f;
         float horizontalSize = verticalSize * cam.aspect;
@@ -99,5 +119,24 @@ public class CameraController : MonoBehaviour
         }
 
         transform.position = targetPosition;
+    }
+
+    /// <summary>
+    /// Called by BuildingDragHandler when a building starts being dragged
+    /// </summary>
+    public void NotifyBuildingDragStarted(BuildingDragHandler handler)
+    {
+        activeBuilding = handler;
+    }
+
+    /// <summary>
+    /// Called by BuildingDragHandler when a building stops being dragged
+    /// </summary>
+    public void NotifyBuildingDragStopped(BuildingDragHandler handler)
+    {
+        if (activeBuilding == handler)
+        {
+            activeBuilding = null;
+        }
     }
 }
