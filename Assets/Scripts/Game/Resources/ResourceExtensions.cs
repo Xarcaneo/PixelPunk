@@ -21,8 +21,8 @@ namespace PixelPunk.Game.Resources
         public static int GetAmount(this IEnumerable<ResourceData> resources, ResourceType resourceType)
         {
             return resources?
-                .FirstOrDefault(r => string.Equals(r.resourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase))
-                ?.amount ?? 0;
+                .FirstOrDefault(r => string.Equals(r.ResourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase))
+                ?.Amount ?? 0;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace PixelPunk.Game.Resources
         public static DateTime GetLastUpdateTime(this IEnumerable<ResourceData> resources, ResourceType resourceType)
         {
             return resources?
-                .FirstOrDefault(r => string.Equals(r.resourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault(r => string.Equals(r.ResourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase))
                 ?.LastUpdatedAt ?? DateTime.MinValue;
         }
 
@@ -48,7 +48,7 @@ namespace PixelPunk.Game.Resources
         public static bool TryGetResource(this IEnumerable<ResourceData> resources, ResourceType resourceType, out ResourceData? resourceData)
         {
             resourceData = resources?
-                .FirstOrDefault(r => string.Equals(r.resourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(r => string.Equals(r.ResourceName, resourceType.ToString(), StringComparison.OrdinalIgnoreCase));
             return resourceData != null;
         }
     }

@@ -73,6 +73,19 @@ namespace PixelPunk.UI.Resources
             goldText.text = $"Gold: {playerData.GetResourceAmount(ResourceType.Gold)}";
             silverText.text = $"Silver: {playerData.GetResourceAmount(ResourceType.Silver)}";
             coalText.text = $"Coal: {playerData.GetResourceAmount(ResourceType.Coal)}";
+
+            var buildings = playerData.Buildings;
+
+            if(buildings.Count == 0)
+            {
+                Debug.LogWarning("[ResourcesUI] No buildings found in player data");
+                return;
+            }
+
+            foreach (var building in buildings)
+            {
+                Debug.Log($"[ResourcesUI] Building {building.BuildingId} at ({building.PositionX}, {building.PositionY})");   
+            }
         }
     }
 }
